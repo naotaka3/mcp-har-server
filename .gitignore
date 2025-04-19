@@ -4,3 +4,6 @@ build/
 .env*
 *.db
 config.json
+hars/*.har
+hars/**/*.har
+!hars/README.md

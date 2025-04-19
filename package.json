@@ -1,13 +1,13 @@
 {
-  "name": "mcp-proxy-server",
+  "name": "mcp-har-server",
   "version": "0.1.0",
   "author": "Adam Wattis",
   "license": "MIT",
-  "description": "An MCP proxy server that aggregates and serves multiple MCP resource servers through a single interface",
+  "description": "An MCP server that parses HAR files and returns requests in a simplified format",
   "private": true,
   "type": "module",
   "bin": {
-    "mcp-proxy-server": "./build/index.js"
+    "mcp-har-server": "./build/index.js"
   },
   "files": [
     "build"
@@ -27,7 +27,9 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{ts,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,json,md}\"",
+    "example:direct": "tsx examples/direct-parser-test.js",
+    "example:mcp": "tsx examples/har-viewer-example.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.8.0",

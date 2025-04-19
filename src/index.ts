@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { createMcpServer } from './mcp-server.js';
+import { createMcpHarServer } from './mcp-har-server.js';
 
 async function main() {
   const transport = new StdioServerTransport();
-  const { server, cleanup } = await createMcpServer();
+  const { server, cleanup } = await createMcpHarServer();
 
   await server.connect(transport);
 
+  console.log('MCP HAR Server started and ready to process requests');
+
   // Cleanup on exit
   process.on('SIGINT', async () => {
+    console.log('Shutting down MCP HAR Server...');
     await cleanup();
     await server.close();
     process.exit(0);

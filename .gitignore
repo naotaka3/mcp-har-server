@@ -6,4 +6,3 @@ build/
 config.json
 hars/*.har
 hars/**/*.har
-!hars/README.md

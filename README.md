@@ -53,17 +53,17 @@ const result = await mcpClient.callTool('har_viewer', {
 With `showQueryParams: true`:
 
 ```
-[1] 200 GET https://www.googletagmanager.com/static/service_worker/54a0/sw_iframe.html?origin=https%3A%2F%2Fp.ieyasu.co
-[2] 200 GET https://d28smvig8jlp61.cloudfront.net/sync/sync.html?1744984310014
-[3] 200 GET https://d28smvig8jlp61.cloudfront.net/sync/sync.js?1744984310178
+[1] 200 GET https://example.com/api/users?page=1&limit=10
+[2] 404 POST https://api.example.org/data/process?format=json&version=2.1
+[3] 500 PUT https://service.example.net/update?id=12345&token=abc123
 ```
 
 With `showQueryParams: false`:
 
 ```
-[1] 200 GET https://www.googletagmanager.com/static/service_worker/54a0/sw_iframe.html
-[2] 200 GET https://d28smvig8jlp61.cloudfront.net/sync/sync.html
-[3] 200 GET https://d28smvig8jlp61.cloudfront.net/sync/sync.js
+[1] 200 GET https://example.com/api/users
+[2] 404 POST https://api.example.org/data/process
+[3] 500 PUT https://service.example.net/update
 ```
 
 ## Development

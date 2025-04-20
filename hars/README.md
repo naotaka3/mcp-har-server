@@ -15,11 +15,11 @@ The samples in this directory can be used with the MCP HAR server tool. To use y
 ```javascript
 const result = await mcpClient.callTool('har_viewer', {
   filePath: '/path/to/your/file.har',
-  showQueryParams: true,  // Set to false to hide query parameters
+  showQueryParams: true, // Set to false to hide query parameters
   filter: {
-    statusCode: 200,      // Optional: Filter by status code
-    method: 'GET',         // Optional: Filter by HTTP method
-    urlPattern: 'api'      // Optional: Filter by URL pattern
-  }
+    statusCode: 200, // Optional: Filter by status code
+    method: 'GET', // Optional: Filter by HTTP method
+    urlPattern: 'api', // Optional: Filter by URL pattern
+  },
 });
 ```

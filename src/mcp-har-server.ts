@@ -1,6 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
-import { parseAndFormatHar } from './utils/har-parser.js';
+import { handleHarViewer, harViewerSchema } from './handlers/har-viewer-handler.js';
 
 export const createMcpHarServer = async () => {
   // Create an MCP server
@@ -10,41 +9,7 @@ export const createMcpHarServer = async () => {
   });
 
   // Define the har_viewer tool
-  mcpServer.tool(
-    'har_viewer',
-    {
-      filePath: z.string().min(1),
-      showQueryParams: z.boolean().default(true),
-      filter: z
-        .object({
-          statusCode: z.number().optional(),
-          method: z.string().optional(),
-          urlPattern: z.string().optional(),
-        })
-        .optional(),
-    },
-    async ({ filePath, showQueryParams, filter }) => {
-      try {
-        const formattedHar = await parseAndFormatHar(filePath, {
-          showQueryParams,
-          filter,
-        });
-
-        return {
-          content: [{ type: 'text', text: formattedHar }],
-        };
-      } catch (error) {
-        let errorMessage = 'An error occurred while processing the HAR file';
-        if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-
-        return {
-          content: [{ type: 'text', text: `Error: ${errorMessage}` }],
-        };
-      }
-    }
-  );
+  mcpServer.tool('har_viewer', harViewerSchema.shape, handleHarViewer);
 
   async function cleanup() {
     try {

@@ -8,7 +8,7 @@ describe('CLI parser', () => {
 
     expect(options).not.toBeNull();
     expect(options?.filePath).toBe('example.har');
-    expect(options?.showQueryParams).toBe(true); // default
+    expect(options?.showQueryParams).toBe(false); // default
   });
 
   it('should parse file path from --file option', () => {
@@ -27,12 +27,12 @@ describe('CLI parser', () => {
     expect(options?.filePath).toBe('example.har');
   });
 
-  it('should parse hide-query option', () => {
-    const args = ['example.har', '--hide-query'];
+  it('should parse show-query option', () => {
+    const args = ['example.har', '--show-query'];
     const options = parseCliArgs(args);
 
     expect(options).not.toBeNull();
-    expect(options?.showQueryParams).toBe(false);
+    expect(options?.showQueryParams).toBe(true);
   });
 
   it('should parse status code filter', () => {

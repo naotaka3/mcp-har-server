@@ -23,7 +23,7 @@ export function parseCliArgs(args: string[]): CliOptions | null {
     args,
     options: {
       file: { type: 'string', short: 'f' },
-      'hide-query': { type: 'boolean', default: false },
+      'show-query': { type: 'boolean', short: 'q', default: false },
       status: { type: 'string', short: 's' },
       method: { type: 'string', short: 'm' },
       url: { type: 'string', short: 'u' },
@@ -49,7 +49,7 @@ export function parseCliArgs(args: string[]): CliOptions | null {
 
   return {
     filePath,
-    showQueryParams: !values['hide-query'],
+    showQueryParams: values['show-query'],
     statusCode,
     method: values.method,
     urlPattern: values.url,
@@ -67,7 +67,7 @@ Usage: mcp-har-cli [options] <har-file-path>
 
 Options:
   -f, --file <path>     Path to HAR file
-  --hide-query          Hide query parameters in URLs
+  --show-query          Show query parameters in URLs (hidden by default)
   -s, --status <code>   Filter by status code
   -m, --method <method> Filter by HTTP method
   -u, --url <pattern>   Filter by URL pattern

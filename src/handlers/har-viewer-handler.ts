@@ -6,7 +6,7 @@ import { z } from 'zod';
  */
 export const harViewerSchema = z.object({
   filePath: z.string().min(1),
-  showQueryParams: z.boolean().default(true),
+  showQueryParams: z.boolean().default(false),
   filter: z
     .object({
       statusCode: z.number().optional(),

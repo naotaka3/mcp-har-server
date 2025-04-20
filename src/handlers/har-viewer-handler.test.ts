@@ -15,7 +15,7 @@ describe('handleHarViewer', () => {
     const mockFormattedHar = '[1] 200 GET https://example.com';
     const mockArgs = {
       filePath: '/path/to/example.har',
-      showQueryParams: true,
+      showQueryParams: false,
       filter: { statusCode: 200 },
     };
 
@@ -37,7 +37,7 @@ describe('handleHarViewer', () => {
     const mockError = new Error('Failed to read HAR file');
     const mockArgs = {
       filePath: '/path/to/nonexistent.har',
-      showQueryParams: true,
+      showQueryParams: false,
     };
 
     vi.mocked(harParser.parseAndFormatHar).mockRejectedValue(mockError);
@@ -52,7 +52,7 @@ describe('handleHarViewer', () => {
   it('should handle non-Error objects during HAR parsing', async () => {
     const mockArgs = {
       filePath: '/path/to/corrupt.har',
-      showQueryParams: true,
+      showQueryParams: false,
     };
 
     vi.mocked(harParser.parseAndFormatHar).mockRejectedValue('Not an error object');

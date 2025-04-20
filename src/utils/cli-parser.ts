@@ -67,7 +67,7 @@ Usage: mcp-har-cli [options] <har-file-path>
 
 Options:
   -f, --file <path>     Path to HAR file
-  --show-query          Show query parameters in URLs (hidden by default)
+  -q, --show-query      Show query parameters in URLs (hidden by default)
   -s, --status <code>   Filter by status code
   -m, --method <method> Filter by HTTP method
   -u, --url <pattern>   Filter by URL pattern

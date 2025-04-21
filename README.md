@@ -8,6 +8,7 @@ A Model Context Protocol (MCP) server that parses HAR (HTTP Archive) files and d
 - Display requests in a numbered list format with status codes and methods
 - Toggle query parameter visibility
 - Filter requests by status code, method, or URL pattern
+- View detailed headers and body information for specific requests
 
 ## Installation
 
@@ -48,7 +49,20 @@ const result = await mcpClient.callTool('har_viewer', {
 });
 ```
 
-### Example Output
+### Using the HAR Detail tool
+
+The HAR Detail tool allows you to view detailed information about specific requests in a HAR file. You can view headers and optionally body content:
+
+```javascript
+// Example usage through MCP protocol
+const result = await mcpClient.callTool('har_detail', {
+  filePath: '/path/to/your/file.har',
+  indices: 1, // Single index or comma-separated list like '1,3,5'
+  showBody: true, // Set to false to hide request/response bodies
+});
+```
+
+### Example HAR Viewer Output
 
 With `showQueryParams: true`:
 
@@ -64,6 +78,41 @@ With `showQueryParams: false`:
 [1] 200 GET https://example.com/api/users
 [2] 404 POST https://api.example.org/data/process
 [3] 500 PUT https://service.example.net/update
+```
+
+### Example HAR Detail Output
+
+```
+ENTRY [1]
+=== REQUEST ===
+GET https://example.com/api/users?page=1&limit=10
+
+--- Headers ---
+Accept: application/json
+User-Agent: Mozilla/5.0
+
+=== RESPONSE ===
+200 OK
+
+--- Headers ---
+Content-Type: application/json
+Cache-Control: no-cache
+
+--- Body ---
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith"
+    }
+  ],
+  "page": 1,
+  "total": 42
+}
 ```
 
 ## Development

@@ -4,6 +4,11 @@ import {
   removeQueryParams,
   formatHarEntries,
   parseAndFormatHar,
+  getHarEntryByIndex,
+  formatHeaders,
+  formatBody,
+  formatEntryDetails,
+  getHarEntryDetails,
 } from './har-parser.js';
 import fs from 'fs/promises';
 
@@ -22,30 +27,71 @@ const mockHarData = {
         request: {
           method: 'GET',
           url: 'https://example.com/api?param=value',
+          headers: [
+            { name: 'Accept', value: 'application/json' },
+            { name: 'User-Agent', value: 'Mozilla/5.0' },
+          ],
         },
         response: {
           status: 200,
           statusText: 'OK',
+          headers: [
+            { name: 'Content-Type', value: 'application/json' },
+            { name: 'Cache-Control', value: 'no-cache' },
+          ],
+          content: {
+            size: 38,
+            mimeType: 'application/json',
+            text: '{"message":"Hello, World!","status":"ok"}',
+          },
         },
       },
       {
         request: {
           method: 'POST',
           url: 'https://api.example.com/data?token=abc123',
+          headers: [
+            { name: 'Content-Type', value: 'application/json' },
+            { name: 'Authorization', value: 'Bearer token123' },
+          ],
+          postData: {
+            mimeType: 'application/json',
+            text: '{"name":"John","email":"john@example.com"}',
+          },
         },
         response: {
           status: 404,
           statusText: 'Not Found',
+          headers: [{ name: 'Content-Type', value: 'application/json' }],
+          content: {
+            size: 31,
+            mimeType: 'application/json',
+            text: '{"error":"Resource not found"}',
+          },
         },
       },
       {
         request: {
           method: 'PUT',
           url: 'https://api.example.com/update',
+          headers: [{ name: 'Content-Type', value: 'application/json' }],
+          postData: {
+            mimeType: 'application/json',
+            text: '{"id":123,"status":"updated"}',
+          },
         },
         response: {
           status: 201,
           statusText: 'Created',
+          headers: [
+            { name: 'Content-Type', value: 'application/json' },
+            { name: 'Location', value: '/resources/123' },
+          ],
+          content: {
+            size: 25,
+            mimeType: 'application/json',
+            text: '{"id":123,"created":true}',
+          },
         },
       },
     ],
@@ -162,6 +208,170 @@ describe('HAR Parser', () => {
           '[2] 404 POST https://api.example.com/data?token=abc123\n' +
           '[3] 201 PUT https://api.example.com/update'
       );
+    });
+  });
+
+  describe('getHarEntryByIndex', () => {
+    it('should return the correct entry by index', () => {
+      const entry = getHarEntryByIndex(mockHarData, 2);
+      expect(entry).toBe(mockHarData.log.entries[1]); // 1-based to 0-based index conversion
+    });
+
+    it('should return undefined for out-of-bounds index', () => {
+      const entry = getHarEntryByIndex(mockHarData, 10);
+      expect(entry).toBeUndefined();
+    });
+
+    it('should return undefined for negative index', () => {
+      const entry = getHarEntryByIndex(mockHarData, -1);
+      expect(entry).toBeUndefined();
+    });
+  });
+
+  describe('formatHeaders', () => {
+    it('should format headers correctly', () => {
+      const headers = [
+        { name: 'Content-Type', value: 'application/json' },
+        { name: 'Authorization', value: 'Bearer token123' },
+      ];
+
+      const result = formatHeaders(headers);
+      expect(result).toBe('Content-Type: application/json\nAuthorization: Bearer token123');
+    });
+
+    it('should handle empty headers array', () => {
+      const result = formatHeaders([]);
+      expect(result).toBe('');
+    });
+  });
+
+  describe('formatBody', () => {
+    it('should format JSON body with proper indentation', () => {
+      const content = {
+        mimeType: 'application/json',
+        text: '{"name":"John","age":30}',
+      };
+
+      const result = formatBody(content);
+      expect(result).toBe(JSON.stringify(JSON.parse(content.text), null, 2));
+    });
+
+    it('should handle non-JSON content', () => {
+      const content = {
+        mimeType: 'text/plain',
+        text: 'Hello, World!',
+      };
+
+      const result = formatBody(content);
+      expect(result).toBe('Hello, World!');
+    });
+
+    it('should handle missing text', () => {
+      const content = {
+        mimeType: 'application/json',
+      };
+
+      const result = formatBody(content);
+      expect(result).toBe('[No Body Content]');
+    });
+
+    it('should handle malformed JSON', () => {
+      const content = {
+        mimeType: 'application/json',
+        text: '{ invalid json',
+      };
+
+      const result = formatBody(content);
+      expect(result).toBe('{ invalid json');
+    });
+  });
+
+  describe('formatEntryDetails', () => {
+    it('should format entry details without body', () => {
+      const entry = mockHarData.log.entries[0];
+      const result = formatEntryDetails(entry, { showBody: false });
+
+      // Verify the result contains headers but not body
+      expect(result).toContain('=== REQUEST ===');
+      expect(result).toContain('=== RESPONSE ===');
+      expect(result).toContain('--- Headers ---');
+      expect(result).toContain('Accept: application/json');
+      expect(result).toContain('Content-Type: application/json');
+      expect(result).not.toContain('--- Body ---');
+    });
+
+    it('should format entry details with body', () => {
+      const entry = mockHarData.log.entries[0];
+      const result = formatEntryDetails(entry, { showBody: true });
+
+      // Verify the result contains headers and body
+      expect(result).toContain('=== REQUEST ===');
+      expect(result).toContain('=== RESPONSE ===');
+      expect(result).toContain('--- Headers ---');
+      expect(result).toContain('Accept: application/json');
+      expect(result).toContain('Content-Type: application/json');
+      expect(result).toContain('--- Body ---');
+      expect(result).toContain('"message": "Hello, World!"');
+    });
+  });
+
+  describe('getHarEntryDetails', () => {
+    it('should get details for a single entry', async () => {
+      // Mock the file read operation
+      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockHarData));
+
+      const result = await getHarEntryDetails('/path/to/file.har', [1], { showBody: false });
+
+      expect(result.success).toBe(true);
+      expect(result.content).toContain('ENTRY [1]');
+      expect(result.content).toContain('=== REQUEST ===');
+      expect(result.content).toContain('=== RESPONSE ===');
+    });
+
+    it('should get details for multiple entries', async () => {
+      // Mock the file read operation
+      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockHarData));
+
+      const result = await getHarEntryDetails('/path/to/file.har', [1, 3], { showBody: true });
+
+      expect(result.success).toBe(true);
+      expect(result.content).toContain('ENTRY [1]');
+      expect(result.content).toContain('ENTRY [3]');
+      expect(result.content).toContain('=== REQUEST ===');
+      expect(result.content).toContain('=== RESPONSE ===');
+      expect(result.content).toContain('--- Body ---');
+    });
+
+    it('should handle non-existent entries', async () => {
+      // Mock the file read operation
+      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockHarData));
+
+      const result = await getHarEntryDetails('/path/to/file.har', [10], { showBody: false });
+
+      expect(result.success).toBe(true);
+      expect(result.content).toContain('Entry [10] does not exist');
+      expect(result.content).toContain('Valid range: 1-3');
+    });
+
+    it('should handle errors', async () => {
+      // Mock a file read error
+      vi.mocked(fs.readFile).mockRejectedValue(new Error('File not found'));
+
+      const result = await getHarEntryDetails('/path/to/file.har', [1], { showBody: false });
+
+      expect(result.success).toBe(false);
+      expect(result.content).toContain('Failed to get HAR entry details');
+      expect(result.content).toContain('File not found');
+    });
+
+    it('should handle empty HAR files', async () => {
+      // Mock an empty HAR file
+      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify({ log: { entries: [] } }));
+
+      const result = await getHarEntryDetails('/path/to/file.har', [1], { showBody: false });
+
+      expect(result.success).toBe(false);
+      expect(result.content).toBe('No entries found in HAR file.');
     });
   });
 });

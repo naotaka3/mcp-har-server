@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { handleHarViewer } from './handlers/har-viewer-handler.js';
+import { handleHarDetail } from './handlers/har-detail-handler.js';
 import { parseCliArgs, printHelp } from './utils/cli-parser.js';
 
 /**
@@ -17,16 +18,28 @@ async function main(): Promise<void> {
       process.exit(0);
     }
 
-    // Use the handler to process the HAR file
-    const result = await handleHarViewer({
-      filePath: options.filePath,
-      showQueryParams: options.showQueryParams,
-      filter: {
-        statusCode: options.statusCode,
-        method: options.method,
-        urlPattern: options.urlPattern,
-      },
-    });
+    let result;
+
+    // Determine which mode to use based on command
+    if (options.command === 'detail') {
+      // Detail mode - show headers and optionally body for specific entries
+      result = await handleHarDetail({
+        filePath: options.filePath,
+        indices: options.indices!,
+        showBody: options.showBody,
+      });
+    } else {
+      // List mode - show list of all entries with filtering
+      result = await handleHarViewer({
+        filePath: options.filePath,
+        showQueryParams: options.showQueryParams,
+        filter: {
+          statusCode: options.statusCode,
+          method: options.method,
+          urlPattern: options.urlPattern,
+        },
+      });
+    }
 
     // Output the result
     console.log(result.content[0].text);

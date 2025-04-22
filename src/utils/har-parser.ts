@@ -239,3 +239,39 @@ export async function getHarEntryDetails(
     };
   }
 }
+
+/**
+ * Extracts unique domains from a HAR file
+ * @param harData Parsed HAR file data
+ * @returns Array of unique domains
+ */
+export function extractDomains(harData: HarFile): string[] {
+  const domains = new Set<string>();
+
+  harData.log.entries.forEach((entry) => {
+    try {
+      const url = new URL(entry.request.url);
+      domains.add(url.hostname);
+    } catch {
+      // Skip if URL parsing fails
+    }
+  });
+
+  return Array.from(domains).sort();
+}
+
+/**
+ * Parses HAR file and extracts unique domains
+ * @param filePath Path to the HAR file
+ * @returns Formatted string of unique domains
+ */
+export async function parseAndExtractDomains(filePath: string): Promise<string> {
+  const harData = await readHarFile(filePath);
+  const domains = extractDomains(harData);
+
+  if (domains.length === 0) {
+    return 'No domains found in HAR file.';
+  }
+
+  return domains.join('\n');
+}

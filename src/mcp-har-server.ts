@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { handleHarViewer, harViewerSchema } from './handlers/har-viewer-handler.js';
 import { handleHarDetail, harDetailSchema } from './handlers/har-detail-handler.js';
+import { handleDomainList, domainListSchema } from './handlers/domain-list-handler.js';
 
 export const createMcpHarServer = async () => {
   // Create an MCP server
@@ -22,6 +23,14 @@ export const createMcpHarServer = async () => {
     'Provides detailed information about specific HAR file entries including headers and request/response bodies.',
     harDetailSchema.shape,
     handleHarDetail
+  );
+
+  // Define the domain_list tool
+  mcpServer.tool(
+    'domain_list',
+    'Lists all unique domains found in a HAR file to help reduce output volume and provide filtering options.',
+    domainListSchema.shape,
+    handleDomainList
   );
 
   async function cleanup() {

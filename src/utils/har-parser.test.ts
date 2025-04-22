@@ -9,6 +9,8 @@ import {
   formatBody,
   formatEntryDetails,
   getHarEntryDetails,
+  extractDomains,
+  parseAndExtractDomains,
 } from './har-parser.js';
 import fs from 'fs/promises';
 
@@ -372,6 +374,70 @@ describe('HAR Parser', () => {
 
       expect(result.success).toBe(false);
       expect(result.content).toBe('No entries found in HAR file.');
+    });
+  });
+
+  describe('extractDomains', () => {
+    it('should extract unique domains from HAR data', () => {
+      const domains = extractDomains(mockHarData);
+      expect(domains).toEqual(['api.example.com', 'example.com']);
+    });
+
+    it('should handle HAR data with no valid URLs', () => {
+      const emptyHarData = {
+        log: {
+          entries: [
+            {
+              request: { method: 'GET', url: 'invalid-url', headers: [] },
+              response: {
+                status: 200,
+                statusText: 'OK',
+                headers: [],
+                content: {
+                  size: 0,
+                  mimeType: 'text/plain',
+                },
+              },
+            },
+          ],
+        },
+      };
+      const domains = extractDomains(emptyHarData);
+      expect(domains).toEqual([]);
+    });
+
+    it('should return an empty array for HAR data with no entries', () => {
+      const emptyHarData = { log: { entries: [] } };
+      const domains = extractDomains(emptyHarData);
+      expect(domains).toEqual([]);
+    });
+  });
+
+  describe('parseAndExtractDomains', () => {
+    it('should parse HAR file and extract domains as formatted string', async () => {
+      // Mock the file read operation
+      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockHarData));
+
+      const result = await parseAndExtractDomains('/path/to/file.har');
+      expect(result).toBe('api.example.com\nexample.com');
+    });
+
+    it('should handle HAR files with no domains', async () => {
+      // Mock a HAR file with no valid URLs
+      const emptyHarData = { log: { entries: [] } };
+      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(emptyHarData));
+
+      const result = await parseAndExtractDomains('/path/to/file.har');
+      expect(result).toBe('No domains found in HAR file.');
+    });
+
+    it('should handle errors', async () => {
+      // Mock a file read error
+      vi.mocked(fs.readFile).mockRejectedValue(new Error('File not found'));
+
+      await expect(parseAndExtractDomains('/path/to/file.har')).rejects.toThrow(
+        'Failed to read or parse HAR file: File not found'
+      );
     });
   });
 });

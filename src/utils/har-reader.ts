@@ -2,6 +2,15 @@ import fs from 'fs/promises';
 import path from 'path';
 import { HarFile } from '../types/har.js';
 
+// TypeScript global declaration
+declare global {
+  // eslint-disable-next-line no-var
+  var entryHashMap: Map<string, number> | undefined;
+}
+
+// Initialize global entryHashMap if it doesn't exist
+global.entryHashMap = global.entryHashMap || new Map<string, number>();
+
 /**
  * Reads and parses a HAR file from the given path
  * @param filePath Path to the HAR file

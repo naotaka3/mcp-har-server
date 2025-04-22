@@ -1,5 +1,6 @@
 import { URL } from 'url';
 import { HarFile, HarHeader, FormatOptions } from '../types/har.js';
+import { generateEntryHash, shortenHash } from './hash.js';
 
 /**
  * Removes query parameters from a URL
@@ -17,10 +18,10 @@ export function removeQueryParams(urlString: string): string {
 }
 
 /**
- * Formats HAR entries as a numbered list of requests
+ * Formats HAR entries as a list of requests with hash identifiers
  * @param harData Parsed HAR file data
  * @param options Formatting options
- * @returns Formatted string with numbered requests
+ * @returns Formatted string with hash-identified requests
  */
 export function formatHarEntries(harData: HarFile, options: FormatOptions): string {
   const { showQueryParams, filter } = options;
@@ -50,17 +51,22 @@ export function formatHarEntries(harData: HarFile, options: FormatOptions): stri
     }
   }
 
+  // Process each entry
+
   // Format each entry
-  const formattedEntries = filteredEntries.map((entry, index) => {
+  const formattedEntries = filteredEntries.map((entry) => {
     const { method } = entry.request;
     const { status } = entry.response;
     let url = entry.request.url;
+
+    const hash = generateEntryHash(entry);
+    const shortHash = shortenHash(hash);
 
     if (!showQueryParams) {
       url = removeQueryParams(url);
     }
 
-    return `[${index + 1}] ${status} ${method} ${url}`;
+    return `[${shortHash}] ${status} ${method} ${url}`;
   });
 
   return formattedEntries.join('\n');

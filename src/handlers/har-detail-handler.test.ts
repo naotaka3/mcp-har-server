@@ -12,7 +12,7 @@ describe('har-detail-handler', () => {
     vi.resetAllMocks();
   });
 
-  it('should return entry details for a single index', async () => {
+  it('should return entry details for a single hash', async () => {
     const mockContent = 'Mock HAR entry details';
     vi.mocked(harParser.getHarEntryDetails).mockResolvedValue({
       success: true,
@@ -21,15 +21,17 @@ describe('har-detail-handler', () => {
 
     const result = await handleHarDetail({
       filePath: 'test.har',
-      indices: 1,
+      hashes: 'abc1234',
       showBody: false,
     });
 
-    expect(harParser.getHarEntryDetails).toHaveBeenCalledWith('test.har', [1], { showBody: false });
+    expect(harParser.getHarEntryDetails).toHaveBeenCalledWith('test.har', ['abc1234'], {
+      showBody: false,
+    });
     expect(result.content[0].text).toBe(mockContent);
   });
 
-  it('should return entry details for multiple comma-separated indices', async () => {
+  it('should return entry details for multiple comma-separated hashes', async () => {
     const mockContent = 'Mock HAR entry details for multiple entries';
     vi.mocked(harParser.getHarEntryDetails).mockResolvedValue({
       success: true,
@@ -38,13 +40,17 @@ describe('har-detail-handler', () => {
 
     const result = await handleHarDetail({
       filePath: 'test.har',
-      indices: '1,3,5',
+      hashes: 'abc1234,def5678,ghi9012',
       showBody: true,
     });
 
-    expect(harParser.getHarEntryDetails).toHaveBeenCalledWith('test.har', [1, 3, 5], {
-      showBody: true,
-    });
+    expect(harParser.getHarEntryDetails).toHaveBeenCalledWith(
+      'test.har',
+      ['abc1234', 'def5678', 'ghi9012'],
+      {
+        showBody: true,
+      }
+    );
     expect(result.content[0].text).toBe(mockContent);
   });
 
@@ -54,7 +60,7 @@ describe('har-detail-handler', () => {
 
     const result = await handleHarDetail({
       filePath: 'test.har',
-      indices: 1,
+      hashes: 'abc1234',
       showBody: false,
     });
 
@@ -66,7 +72,7 @@ describe('har-detail-handler', () => {
 
     const result = await handleHarDetail({
       filePath: 'test.har',
-      indices: 1,
+      hashes: 'abc1234',
       showBody: false,
     });
 

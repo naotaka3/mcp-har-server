@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 /**
  * Schema for HAR viewer tool arguments
+ * Displays HAR file requests in a simplified format with hash identifiers
  */
 export const harViewerSchema = z.object({
   filePath: z.string().min(1).describe('Path to the HAR file to parse'),

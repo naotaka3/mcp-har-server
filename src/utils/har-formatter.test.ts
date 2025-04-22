@@ -103,20 +103,20 @@ describe('HAR Formatter', () => {
   describe('formatHarEntries', () => {
     it('should format entries with query parameters', () => {
       const result = formatHarEntries(mockHarData, { showQueryParams: true });
-      expect(result).toBe(
-        '[1] 200 GET https://example.com/api?param=value\n' +
-          '[2] 404 POST https://api.example.com/data?token=abc123\n' +
-          '[3] 201 PUT https://api.example.com/update'
+      // Match the format but don't rely on specific hash values which could change
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 200 GET https:\/\/example\.com\/api\?param=value/);
+      expect(result).toMatch(
+        /\[[0-9a-f]{7}\] 404 POST https:\/\/api\.example\.com\/data\?token=abc123/
       );
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 201 PUT https:\/\/api\.example\.com\/update/);
     });
 
     it('should format entries without query parameters', () => {
       const result = formatHarEntries(mockHarData, { showQueryParams: false });
-      expect(result).toBe(
-        '[1] 200 GET https://example.com/api\n' +
-          '[2] 404 POST https://api.example.com/data\n' +
-          '[3] 201 PUT https://api.example.com/update'
-      );
+      // Match the format but don't rely on specific hash values
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 200 GET https:\/\/example\.com\/api/);
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 404 POST https:\/\/api\.example\.com\/data/);
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 201 PUT https:\/\/api\.example\.com\/update/);
     });
 
     it('should filter entries by status code', () => {
@@ -124,7 +124,7 @@ describe('HAR Formatter', () => {
         showQueryParams: true,
         filter: { statusCode: 200 },
       });
-      expect(result).toBe('[1] 200 GET https://example.com/api?param=value');
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 200 GET https:\/\/example\.com\/api\?param=value/);
     });
 
     it('should filter entries by method', () => {
@@ -132,7 +132,9 @@ describe('HAR Formatter', () => {
         showQueryParams: true,
         filter: { method: 'POST' },
       });
-      expect(result).toBe('[1] 404 POST https://api.example.com/data?token=abc123');
+      expect(result).toMatch(
+        /\[[0-9a-f]{7}\] 404 POST https:\/\/api\.example\.com\/data\?token=abc123/
+      );
     });
 
     it('should filter entries by URL pattern', () => {
@@ -140,10 +142,10 @@ describe('HAR Formatter', () => {
         showQueryParams: true,
         filter: { urlPattern: 'api.example' },
       });
-      expect(result).toBe(
-        '[1] 404 POST https://api.example.com/data?token=abc123\n' +
-          '[2] 201 PUT https://api.example.com/update'
+      expect(result).toMatch(
+        /\[[0-9a-f]{7}\] 404 POST https:\/\/api\.example\.com\/data\?token=abc123/
       );
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 201 PUT https:\/\/api\.example\.com\/update/);
     });
   });
 

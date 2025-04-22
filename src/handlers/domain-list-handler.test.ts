@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { handleDomainList } from './domain-list-handler';
-import * as harParser from '../utils/har-parser';
+import { handleDomainList } from './domain-list-handler.js';
+import * as harParser from '../utils/har-parser.js';
 
 // Mock the har-parser module
 vi.mock('../utils/har-parser.js', () => ({

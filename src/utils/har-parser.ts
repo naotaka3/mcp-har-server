@@ -273,5 +273,5 @@ export async function parseAndExtractDomains(filePath: string): Promise<string> 
     return 'No domains found in HAR file.';
   }
 
-  return domains.map((domain, index) => `[${index + 1}] ${domain}`).join('\n');
+  return domains.join('\n');
 }

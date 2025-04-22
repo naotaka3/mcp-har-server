@@ -2,6 +2,7 @@
 
 import { handleHarViewer } from './handlers/har-viewer-handler.js';
 import { handleHarDetail } from './handlers/har-detail-handler.js';
+import { handleDomainList } from './handlers/domain-list-handler.js';
 import { parseCliArgs, printHelp } from './utils/cli-parser.js';
 
 /**
@@ -27,6 +28,11 @@ async function main(): Promise<void> {
         filePath: options.filePath,
         indices: options.indices!,
         showBody: options.showBody,
+      });
+    } else if (options.command === 'domains') {
+      // Domains mode - show list of all unique domains in the HAR file
+      result = await handleDomainList({
+        filePath: options.filePath,
       });
     } else {
       // List mode - show list of all entries with filtering

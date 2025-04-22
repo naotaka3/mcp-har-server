@@ -6,7 +6,7 @@ import { parseArgs } from 'node:util';
 
 export interface CliOptions {
   filePath: string;
-  command: 'list' | 'detail';
+  command: 'list' | 'detail' | 'domains';
   // List mode options
   showQueryParams: boolean;
   statusCode?: number;
@@ -31,10 +31,10 @@ export function parseCliArgs(args: string[]): CliOptions | null {
 
   // Determine command (first positional argument)
   const firstArg = args.find((arg) => !arg.startsWith('-'));
-  let command: 'list' | 'detail' = 'list'; // Default command
+  let command: 'list' | 'detail' | 'domains' = 'list'; // Default command
   let remainingArgs = [...args];
 
-  if (firstArg === 'list' || firstArg === 'detail') {
+  if (firstArg === 'list' || firstArg === 'detail' || firstArg === 'domains') {
     command = firstArg;
     remainingArgs = args.filter((arg) => arg !== firstArg);
   }
@@ -103,6 +103,7 @@ Usage: mcp-har-cli [command] [options] <har-file-path>
 Commands:
   list              List HAR entries with optional filtering (default)
   detail            Show detailed information for specific HAR entries
+  domains           List all unique domains found in the HAR file
 
 Common Options:
   -f, --file <path>      Path to HAR file
@@ -127,5 +128,8 @@ Examples:
 
   # Show details of entries #2 and #5 including body content
   mcp-har-cli detail -i 2,5 -b example.har
+
+  # Show list of all unique domains in the HAR file
+  mcp-har-cli domains example.har
 `);
 }

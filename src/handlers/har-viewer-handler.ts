@@ -19,6 +19,10 @@ export const harViewerSchema = z.object({
         .string()
         .optional()
         .describe('Filter requests by URL pattern (substring match)'),
+      excludeDomains: z
+        .array(z.string())
+        .optional()
+        .describe('Domains to exclude from the output (multiple domains can be specified)'),
     })
     .optional()
     .describe('Optional filters to narrow down the displayed requests'),

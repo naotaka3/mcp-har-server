@@ -33,6 +33,30 @@ describe('handleHarViewer', () => {
     });
   });
 
+  it('should handle excludeDomains filter parameter', async () => {
+    const mockFormattedHar = '[1] 200 GET https://example.com';
+    const mockArgs = {
+      filePath: '/path/to/example.har',
+      showQueryParams: false,
+      filter: {
+        excludeDomains: ['google.com', 'analytics.com'],
+      },
+    };
+
+    vi.mocked(harParser.parseAndFormatHar).mockResolvedValue(mockFormattedHar);
+
+    const result = await handleHarViewer(mockArgs);
+
+    expect(harParser.parseAndFormatHar).toHaveBeenCalledWith(mockArgs.filePath, {
+      showQueryParams: mockArgs.showQueryParams,
+      filter: mockArgs.filter,
+    });
+
+    expect(result).toEqual({
+      content: [{ type: 'text', text: mockFormattedHar }],
+    });
+  });
+
   it('should handle errors during HAR parsing', async () => {
     const mockError = new Error('Failed to read HAR file');
     const mockArgs = {

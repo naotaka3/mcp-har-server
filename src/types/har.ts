@@ -51,6 +51,7 @@ export interface HarFilter {
   statusCode?: number;
   method?: string;
   urlPattern?: string;
+  excludeDomains?: string[];
 }
 
 /**

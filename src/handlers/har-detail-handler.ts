@@ -6,20 +6,7 @@ import { z } from 'zod';
  */
 export const harDetailSchema = z.object({
   filePath: z.string().min(1).describe('Path to the HAR file to examine'),
-  indices: z
-    .union([
-      z.number().int().positive().describe('Index of the request to view (1-based)'),
-      z.string().refine(
-        (val) => {
-          // Accept comma-separated list of integers
-          return /^\d+(,\d+)*$/.test(val);
-        },
-        {
-          message: 'Indices must be comma-separated positive integers',
-        }
-      ),
-    ])
-    .describe('Request indices to view (single number or comma-separated list)'),
+  hashes: z.string().describe('Request hashes to view (single hash or comma-separated list)'),
   showBody: z
     .boolean()
     .default(false)
@@ -32,16 +19,16 @@ export const harDetailSchema = z.object({
 export type HarDetailArgs = z.infer<typeof harDetailSchema>;
 
 /**
- * Parses the indices input to an array of numbers
- * @param indices Input from user, either a number or comma-separated string of numbers
- * @returns Array of parsed indices
+ * Parses the hashes input to an array of hash strings
+ * @param hashes Input from user, either a single hash string or comma-separated hash values
+ * @returns Array of parsed hash strings
  */
-function parseIndices(indices: number | string): number[] {
-  if (typeof indices === 'number') {
-    return [indices];
-  }
+function parseHashes(hashes: string): string[] {
+  // Split by comma for multiple values
+  const parts = hashes.split(',').map((part) => part.trim());
 
-  return indices.split(',').map((idx) => parseInt(idx.trim(), 10));
+  // Return array of trimmed hash strings
+  return parts.filter((part) => part.length > 0);
 }
 
 /**
@@ -50,11 +37,11 @@ function parseIndices(indices: number | string): number[] {
  * @returns Detailed information about the specified HAR entries
  */
 export async function handleHarDetail(args: HarDetailArgs) {
-  const { filePath, indices, showBody } = args;
-  const parsedIndices = parseIndices(indices);
+  const { filePath, hashes, showBody } = args;
+  const parsedHashes = parseHashes(hashes);
 
   try {
-    const result = await getHarEntryDetails(filePath, parsedIndices, { showBody });
+    const result = await getHarEntryDetails(filePath, parsedHashes, { showBody });
 
     return {
       content: [{ type: 'text' as const, text: result.content }],

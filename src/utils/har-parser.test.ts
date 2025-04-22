@@ -49,9 +49,9 @@ describe('HAR Parser', () => {
       vi.mocked(harReader.readHarFile).mockResolvedValue(mockHarData);
 
       const result = await parseAndFormatHar('/path/to/file.har', { showQueryParams: true });
-      expect(result).toBe(
-        '[1] 200 GET https://example.com/api?param=value\n' +
-          '[2] 404 POST https://api.example.com/data?token=abc123'
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 200 GET https:\/\/example\.com\/api\?param=value/);
+      expect(result).toMatch(
+        /\[[0-9a-f]{7}\] 404 POST https:\/\/api\.example\.com\/data\?token=abc123/
       );
       expect(harReader.readHarFile).toHaveBeenCalledWith('/path/to/file.har');
     });

@@ -26,7 +26,7 @@ async function main(): Promise<void> {
       // Detail mode - show headers and optionally body for specific entries
       result = await handleHarDetail({
         filePath: options.filePath,
-        indices: options.indices!,
+        hashes: options.hashes!,
         showBody: options.showBody,
       });
     } else if (options.command === 'domains') {

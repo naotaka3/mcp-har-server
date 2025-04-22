@@ -13,7 +13,7 @@ export interface CliOptions {
   method?: string;
   urlPattern?: string;
   // Detail mode options
-  indices?: string;
+  hashes?: string;
   showBody: boolean;
 }
 
@@ -25,7 +25,7 @@ export interface CliOptions {
  */
 export function parseCliArgs(args: string[]): CliOptions | null {
   // Check for help flag first
-  if (args.includes('-h') || args.includes('--help')) {
+  if (args.includes('--help')) {
     return null; // Indicate help was requested
   }
 
@@ -48,7 +48,7 @@ export function parseCliArgs(args: string[]): CliOptions | null {
       status: { type: 'string', short: 's' },
       method: { type: 'string', short: 'm' },
       url: { type: 'string', short: 'u' },
-      indices: { type: 'string', short: 'i' },
+      hashes: { type: 'string', short: 'h' },
       body: { type: 'boolean', short: 'b', default: false },
     },
     allowPositionals: true,
@@ -69,13 +69,8 @@ export function parseCliArgs(args: string[]): CliOptions | null {
 
   // Validate command-specific requirements
   if (command === 'detail') {
-    if (values.indices === undefined) {
-      throw new Error('Indices are required in detail mode (-i or --indices)');
-    }
-
-    // Validate indices format if provided
-    if (values.indices !== undefined && !/^\d+(,\d+)*$/.test(values.indices)) {
-      throw new Error('Indices must be comma-separated positive integers');
+    if (values.hashes === undefined) {
+      throw new Error('Hash identifiers are required in detail mode (-h or --hashes)');
     }
   }
 
@@ -86,7 +81,7 @@ export function parseCliArgs(args: string[]): CliOptions | null {
     statusCode,
     method: values.method,
     urlPattern: values.url,
-    indices: values.indices,
+    hashes: values.hashes,
     showBody: values.body || false,
   };
 }
@@ -107,7 +102,7 @@ Commands:
 
 Common Options:
   -f, --file <path>      Path to HAR file
-  -h, --help             Show this help message
+  --help                 Show this help message
 
 List Command Options:
   -q, --show-query       Show query parameters in URLs (hidden by default)
@@ -116,19 +111,19 @@ List Command Options:
   -u, --url <pattern>    Filter by URL pattern
 
 Detail Command Options:
-  -i, --indices <list>   Comma-separated list of entry indices to show
+  -h, --hashes <list>    Comma-separated list of hash identifiers to show
   -b, --body             Show request/response body (headers only by default)
 
 Examples:
   # Show list of all requests in HAR file
   mcp-har-cli list example.har
 
-  # Show details of entry #1 with headers only
-  mcp-har-cli detail -i 1 example.har
+  # Show details of entry by hash identifier with headers only
+  mcp-har-cli detail -h 3f4a21b example.har
 
-  # Show details of entries #2 and #5 including body content
-  mcp-har-cli detail -i 2,5 -b example.har
-
+  # Show details of multiple entries by hash identifiers including body content
+  mcp-har-cli detail -h 3f4a21b,7c8d9ef -b example.har
+  
   # Show list of all unique domains in the HAR file
   mcp-har-cli domains example.har
 `);

@@ -1,7 +1,7 @@
 import { HarEntry, EntryDetailOptions } from '../types/har.js';
 import { readHarFile } from './har-reader.js';
 import { formatHeaders, formatBody } from './har-formatter.js';
-import { getHarEntryByIndex } from './har-extractor.js';
+import { generateEntryHash, shortenHash } from './hash.js';
 
 /**
  * Format details of a specific HAR entry
@@ -41,15 +41,15 @@ export function formatEntryDetails(entry: HarEntry, options: EntryDetailOptions)
 }
 
 /**
- * Gets and formats details for HAR entries by their indices
+ * Gets and formats details for HAR entries by their hash identifiers
  * @param filePath Path to the HAR file
- * @param indices Array of 1-based indices of entries to retrieve
+ * @param hashes Array of hash identifiers of entries to retrieve
  * @param options Options for detail display
  * @returns Object with formatted details or error message
  */
 export async function getHarEntryDetails(
   filePath: string,
-  indices: number[],
+  hashes: string[],
   options: EntryDetailOptions
 ): Promise<{ success: boolean; content: string }> {
   try {
@@ -64,16 +64,24 @@ export async function getHarEntryDetails(
     }
 
     const results: string[] = [];
+    // Build a map of shortened hashes to entries
+    const entryMap = new Map<string, HarEntry>();
 
-    for (const index of indices) {
-      const entry = getHarEntryByIndex(harData, index);
+    // Generate hashes for all entries
+    harData.log.entries.forEach((entry) => {
+      const hash = generateEntryHash(entry);
+      const shortHash = shortenHash(hash);
+      entryMap.set(shortHash, entry);
+    });
+
+    // Process each requested hash
+    for (const hash of hashes) {
+      const entry = entryMap.get(hash);
 
       if (!entry) {
-        results.push(
-          `Entry [${index}] does not exist. Valid range: 1-${harData.log.entries.length}.`
-        );
+        results.push(`Entry with hash [${hash}] does not exist.`);
       } else {
-        results.push(`ENTRY [${index}]\n${formatEntryDetails(entry, options)}`);
+        results.push(`ENTRY [${hash}]\n${formatEntryDetails(entry, options)}`);
       }
     }
 

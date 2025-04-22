@@ -49,6 +49,21 @@ export function formatHarEntries(harData: HarFile, options: FormatOptions): stri
         (entry) => filter.urlPattern !== undefined && entry.request.url.includes(filter.urlPattern)
       );
     }
+
+    if (filter.excludeDomains !== undefined && filter.excludeDomains.length > 0) {
+      filteredEntries = filteredEntries.filter((entry) => {
+        try {
+          const url = new URL(entry.request.url);
+          const hostname = url.hostname;
+          return !filter.excludeDomains?.some(
+            (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
+          );
+        } catch {
+          // If URL parsing fails, keep the entry
+          return true;
+        }
+      });
+    }
   }
 
   // Process each entry

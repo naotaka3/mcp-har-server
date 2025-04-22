@@ -12,6 +12,7 @@ export interface CliOptions {
   statusCode?: number;
   method?: string;
   urlPattern?: string;
+  excludeDomains?: string[];
   // Detail mode options
   hashes?: string;
   showBody: boolean;
@@ -48,6 +49,7 @@ export function parseCliArgs(args: string[]): CliOptions | null {
       status: { type: 'string', short: 's' },
       method: { type: 'string', short: 'm' },
       url: { type: 'string', short: 'u' },
+      'exclude-domains': { type: 'string', short: 'e' },
       hashes: { type: 'string', short: 'h' },
       body: { type: 'boolean', short: 'b', default: false },
     },
@@ -74,6 +76,11 @@ export function parseCliArgs(args: string[]): CliOptions | null {
     }
   }
 
+  // Process exclude-domains if provided (convert comma-separated list to array)
+  const excludeDomains = values['exclude-domains']
+    ? values['exclude-domains'].split(',').map((domain) => domain.trim())
+    : undefined;
+
   return {
     filePath,
     command,
@@ -81,6 +88,7 @@ export function parseCliArgs(args: string[]): CliOptions | null {
     statusCode,
     method: values.method,
     urlPattern: values.url,
+    excludeDomains,
     hashes: values.hashes,
     showBody: values.body || false,
   };
@@ -109,6 +117,7 @@ List Command Options:
   -s, --status <code>    Filter by status code
   -m, --method <method>  Filter by HTTP method
   -u, --url <pattern>    Filter by URL pattern
+  -e, --exclude-domains <domains> Exclude requests from specified domains (comma-separated)
 
 Detail Command Options:
   -h, --hashes <list>    Comma-separated list of hash identifiers to show

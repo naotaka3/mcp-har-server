@@ -43,6 +43,7 @@ async function main(): Promise<void> {
           statusCode: options.statusCode,
           method: options.method,
           urlPattern: options.urlPattern,
+          excludeDomains: options.excludeDomains,
         },
       });
     }

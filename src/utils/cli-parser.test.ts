@@ -60,6 +60,22 @@ describe('CLI parser', () => {
     expect(options?.urlPattern).toBe('api');
   });
 
+  it('should parse exclude-domains option', () => {
+    const args = ['list', 'example.har', '--exclude-domains', 'example.com,analytics.com'];
+    const options = parseCliArgs(args);
+
+    expect(options).not.toBeNull();
+    expect(options?.excludeDomains).toEqual(['example.com', 'analytics.com']);
+  });
+
+  it('should parse exclude-domains shorthand option', () => {
+    const args = ['list', 'example.har', '-e', 'example.com'];
+    const options = parseCliArgs(args);
+
+    expect(options).not.toBeNull();
+    expect(options?.excludeDomains).toEqual(['example.com']);
+  });
+
   it('should return null for help request', () => {
     const args = ['--help'];
     const options = parseCliArgs(args);

@@ -147,6 +147,25 @@ describe('HAR Formatter', () => {
       );
       expect(result).toMatch(/\[[0-9a-f]{7}\] 201 PUT https:\/\/api\.example\.com\/update/);
     });
+
+    it('should filter entries by excluded domains', () => {
+      const result = formatHarEntries(mockHarData, {
+        showQueryParams: true,
+        filter: { excludeDomains: ['api.example.com'] },
+      });
+      // Should only include example.com but not api.example.com
+      expect(result).toMatch(/\[[0-9a-f]{7}\] 200 GET https:\/\/example\.com\/api\?param=value/);
+      expect(result).not.toMatch(/api\.example\.com/);
+    });
+
+    it('should filter entries by excluded parent domains', () => {
+      const result = formatHarEntries(mockHarData, {
+        showQueryParams: true,
+        filter: { excludeDomains: ['example.com'] },
+      });
+      // Should exclude both example.com and api.example.com
+      expect(result).toBe('');
+    });
   });
 
   describe('formatHeaders', () => {

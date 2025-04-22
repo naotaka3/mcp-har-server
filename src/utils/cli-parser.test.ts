@@ -9,6 +9,7 @@ describe('CLI parser', () => {
     expect(options).not.toBeNull();
     expect(options?.filePath).toBe('example.har');
     expect(options?.showQueryParams).toBe(false); // default
+    expect(options?.command).toBe('list'); // default command
   });
 
   it('should parse file path from --file option', () => {
@@ -28,7 +29,7 @@ describe('CLI parser', () => {
   });
 
   it('should parse show-query option', () => {
-    const args = ['example.har', '--show-query'];
+    const args = ['list', 'example.har', '--show-query'];
     const options = parseCliArgs(args);
 
     expect(options).not.toBeNull();
@@ -36,7 +37,7 @@ describe('CLI parser', () => {
   });
 
   it('should parse status code filter', () => {
-    const args = ['example.har', '--status', '200'];
+    const args = ['list', 'example.har', '--status', '200'];
     const options = parseCliArgs(args);
 
     expect(options).not.toBeNull();
@@ -44,7 +45,7 @@ describe('CLI parser', () => {
   });
 
   it('should parse method filter', () => {
-    const args = ['example.har', '--method', 'GET'];
+    const args = ['list', 'example.har', '--method', 'GET'];
     const options = parseCliArgs(args);
 
     expect(options).not.toBeNull();
@@ -52,7 +53,7 @@ describe('CLI parser', () => {
   });
 
   it('should parse URL pattern filter', () => {
-    const args = ['example.har', '--url', 'api'];
+    const args = ['list', 'example.har', '--url', 'api'];
     const options = parseCliArgs(args);
 
     expect(options).not.toBeNull();
@@ -67,14 +68,46 @@ describe('CLI parser', () => {
   });
 
   it('should throw error for missing file path', () => {
-    const args: string[] = [];
+    const args = ['list'];
 
     expect(() => parseCliArgs(args)).toThrow('HAR file path is required');
   });
 
   it('should throw error for invalid status code', () => {
-    const args = ['example.har', '--status', 'abc'];
+    const args = ['list', 'example.har', '--status', 'abc'];
 
     expect(() => parseCliArgs(args)).toThrow('Status code must be a number');
+  });
+
+  it('should parse detail command', () => {
+    const args = ['detail', '--indices', '1,2,3', 'example.har'];
+    const options = parseCliArgs(args);
+
+    expect(options).not.toBeNull();
+    expect(options?.command).toBe('detail');
+    expect(options?.indices).toBe('1,2,3');
+    expect(options?.showBody).toBe(false); // default
+  });
+
+  it('should parse show body option in detail mode', () => {
+    const args = ['detail', '--indices', '1', '--body', 'example.har'];
+    const options = parseCliArgs(args);
+
+    expect(options).not.toBeNull();
+    expect(options?.command).toBe('detail');
+    expect(options?.indices).toBe('1');
+    expect(options?.showBody).toBe(true);
+  });
+
+  it('should throw error for missing indices in detail mode', () => {
+    const args = ['detail', 'example.har'];
+
+    expect(() => parseCliArgs(args)).toThrow('Indices are required in detail mode');
+  });
+
+  it('should throw error for invalid indices format', () => {
+    const args = ['detail', '--indices', '1,a,3', 'example.har'];
+
+    expect(() => parseCliArgs(args)).toThrow('Indices must be comma-separated positive integers');
   });
 });

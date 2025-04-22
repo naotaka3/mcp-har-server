@@ -5,15 +5,22 @@ import { z } from 'zod';
  * Schema for HAR viewer tool arguments
  */
 export const harViewerSchema = z.object({
-  filePath: z.string().min(1),
-  showQueryParams: z.boolean().default(false),
+  filePath: z.string().min(1).describe('Path to the HAR file to parse'),
+  showQueryParams: z
+    .boolean()
+    .default(false)
+    .describe('Whether to include query parameters in the URL output'),
   filter: z
     .object({
-      statusCode: z.number().optional(),
-      method: z.string().optional(),
-      urlPattern: z.string().optional(),
+      statusCode: z.number().optional().describe('Filter requests by HTTP status code'),
+      method: z.string().optional().describe('Filter requests by HTTP method (GET, POST, etc.)'),
+      urlPattern: z
+        .string()
+        .optional()
+        .describe('Filter requests by URL pattern (substring match)'),
     })
-    .optional(),
+    .optional()
+    .describe('Optional filters to narrow down the displayed requests'),
 });
 
 /**

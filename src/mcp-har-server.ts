@@ -10,10 +10,19 @@ export const createMcpHarServer = async () => {
   });
 
   // Define the har_viewer tool
-  mcpServer.tool('har_viewer', harViewerSchema.shape, handleHarViewer);
-
+  mcpServer.tool(
+    'har_viewer',
+    'Displays HAR file requests in a simplified format with options to filter by method, status code, or URL pattern and toggle query parameter visibility.',
+    harViewerSchema.shape,
+    handleHarViewer
+  );
   // Define the har_detail tool
-  mcpServer.tool('har_detail', harDetailSchema.shape, handleHarDetail);
+  mcpServer.tool(
+    'har_detail',
+    'Provides detailed information about specific HAR file entries including headers and request/response bodies.',
+    harDetailSchema.shape,
+    handleHarDetail
+  );
 
   async function cleanup() {
     try {

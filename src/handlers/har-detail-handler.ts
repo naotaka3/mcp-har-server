@@ -5,20 +5,25 @@ import { z } from 'zod';
  * Schema for HAR detail tool arguments
  */
 export const harDetailSchema = z.object({
-  filePath: z.string().min(1),
-  indices: z.union([
-    z.number().int().positive(),
-    z.string().refine(
-      (val) => {
-        // Accept comma-separated list of integers
-        return /^\d+(,\d+)*$/.test(val);
-      },
-      {
-        message: 'Indices must be comma-separated positive integers',
-      }
-    ),
-  ]),
-  showBody: z.boolean().default(false),
+  filePath: z.string().min(1).describe('Path to the HAR file to examine'),
+  indices: z
+    .union([
+      z.number().int().positive().describe('Index of the request to view (1-based)'),
+      z.string().refine(
+        (val) => {
+          // Accept comma-separated list of integers
+          return /^\d+(,\d+)*$/.test(val);
+        },
+        {
+          message: 'Indices must be comma-separated positive integers',
+        }
+      ),
+    ])
+    .describe('Request indices to view (single number or comma-separated list)'),
+  showBody: z
+    .boolean()
+    .default(false)
+    .describe('Whether to include request and response bodies in the output'),
 });
 
 /**

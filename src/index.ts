@@ -9,11 +9,8 @@ async function main() {
 
   await server.connect(transport);
 
-  console.log('MCP HAR Server started and ready to process requests');
-
   // Cleanup on exit
   process.on('SIGINT', async () => {
-    console.log('Shutting down MCP HAR Server...');
     await cleanup();
     await server.close();
     process.exit(0);

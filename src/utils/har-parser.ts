@@ -1,69 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { URL } from 'url';
-
-/**
- * HAR file entry interface defining the structure of a request in a HAR file
- */
-interface HarEntry {
-  request: {
-    method: string;
-    url: string;
-    headers: HarHeader[];
-    postData?: {
-      mimeType: string;
-      text: string;
-    };
-    // Additional fields available but not used in this implementation
-  };
-  response: {
-    status: number;
-    statusText: string;
-    headers: HarHeader[];
-    content?: {
-      size: number;
-      mimeType: string;
-      text?: string;
-    };
-    // Additional fields available but not used in this implementation
-  };
-  // Other available fields not used in this implementation
-}
-
-/**
- * Interface for HAR header
- */
-interface HarHeader {
-  name: string;
-  value: string;
-}
-
-/**
- * HAR file structure interface
- */
-interface HarFile {
-  log: {
-    entries: HarEntry[];
-    // Additional fields available but not used in this implementation
-  };
-}
-
-/**
- * Filter options for HAR entries
- */
-export interface HarFilter {
-  statusCode?: number;
-  method?: string;
-  urlPattern?: string;
-}
-
-/**
- * Options for formatting HAR entries
- */
-export interface FormatOptions {
-  showQueryParams: boolean;
-  filter?: HarFilter;
-}
+import { HarEntry, HarFile, HarHeader, FormatOptions, EntryDetailOptions } from '../types/har.js';
 
 /**
  * Reads and parses a HAR file from the given path
@@ -164,13 +102,6 @@ export function formatHarEntries(harData: HarFile, options: FormatOptions): stri
 export async function parseAndFormatHar(filePath: string, options: FormatOptions): Promise<string> {
   const harData = await readHarFile(filePath);
   return formatHarEntries(harData, options);
-}
-
-/**
- * Options for retrieving entry details
- */
-export interface EntryDetailOptions {
-  showBody: boolean;
 }
 
 /**

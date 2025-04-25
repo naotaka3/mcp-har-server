@@ -19,3 +19,5 @@ package-lock.json
 
 # Ignore other configuration files
 .github/
+
+docs/coding_rules.md

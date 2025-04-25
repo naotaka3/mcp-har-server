@@ -18,24 +18,22 @@
 │   │   └── har-viewer-handler.ts
 │   ├── index.ts
 │   ├── mcp-har-server.ts
-│   ├── mcp-server.ts
 │   ├── sse.ts
 │   ├── types
-│   │   ├── global.d.ts
 │   │   └── har.ts
 │   └── utils
-│   ├── cli-parser.test.ts
-│   ├── cli-parser.ts
-│   ├── har-details.test.ts
-│   ├── har-details.ts
-│   ├── har-extractor.test.ts
-│   ├── har-extractor.ts
-│   ├── har-formatter.test.ts
-│   ├── har-formatter.ts
-│   ├── har-parser.test.ts
-│   ├── har-parser.ts
-│   ├── har-reader.test.ts
-│   ├── har-reader.ts
-│   └── hash.ts
+│       ├── cli-parser.test.ts
+│       ├── cli-parser.ts
+│       ├── har-details.test.ts
+│       ├── har-details.ts
+│       ├── har-extractor.test.ts
+│       ├── har-extractor.ts
+│       ├── har-formatter.test.ts
+│       ├── har-formatter.ts
+│       ├── har-parser.test.ts
+│       ├── har-parser.ts
+│       ├── har-reader.test.ts
+│       ├── har-reader.ts
+│       └── hash.ts
 ├── tsconfig.json
 └── tsconfig.spec.json

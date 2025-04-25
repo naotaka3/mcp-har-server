@@ -1,10 +1,10 @@
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import express from 'express';
-import { createMcpServer } from './mcp-server.js';
+import { createMcpHarServer } from './mcp-har-server.js';
 
 const app = express();
 
-const { server: mcpServer, cleanup } = await createMcpServer();
+const { server: mcpServer, cleanup } = await createMcpHarServer();
 
 let transport: SSEServerTransport;
 

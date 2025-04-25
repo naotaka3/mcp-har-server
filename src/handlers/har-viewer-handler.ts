@@ -24,6 +24,7 @@ export const harViewerSchema = z.object({
         .optional()
         .describe('Domains to exclude from the output (multiple domains can be specified)'),
     })
+    .optional()
     .describe('Required filters to narrow down the displayed requests'),
 });
 
@@ -44,8 +45,8 @@ export async function handleHarViewer(args: HarViewerArgs, validateFilters: bool
   // Validate the filter requirement if enabled
   if (
     validateFilters &&
-    !filter.urlPattern &&
-    (!filter.excludeDomains || filter.excludeDomains.length === 0)
+    !filter?.urlPattern &&
+    (!filter?.excludeDomains || filter?.excludeDomains.length === 0)
   ) {
     return {
       content: [

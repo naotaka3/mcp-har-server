@@ -11,12 +11,15 @@ describe('handleHarViewer', () => {
     vi.clearAllMocks();
   });
 
-  it('should return formatted HAR data when parsing succeeds', async () => {
+  it('should return formatted HAR data when parsing succeeds with urlPattern filter', async () => {
     const mockFormattedHar = '[1] 200 GET https://example.com';
     const mockArgs = {
       filePath: '/path/to/example.har',
       showQueryParams: false,
-      filter: { statusCode: 200 },
+      filter: {
+        statusCode: 200,
+        urlPattern: 'example.com',
+      },
     };
 
     vi.mocked(harParser.parseAndFormatHar).mockResolvedValue(mockFormattedHar);
@@ -62,6 +65,7 @@ describe('handleHarViewer', () => {
     const mockArgs = {
       filePath: '/path/to/nonexistent.har',
       showQueryParams: false,
+      filter: { urlPattern: 'example.com' },
     };
 
     vi.mocked(harParser.parseAndFormatHar).mockRejectedValue(mockError);
@@ -77,6 +81,7 @@ describe('handleHarViewer', () => {
     const mockArgs = {
       filePath: '/path/to/corrupt.har',
       showQueryParams: false,
+      filter: { urlPattern: 'example.com' },
     };
 
     vi.mocked(harParser.parseAndFormatHar).mockRejectedValue('Not an error object');
@@ -85,6 +90,47 @@ describe('handleHarViewer', () => {
 
     expect(result).toEqual({
       content: [{ type: 'text', text: `Error: An error occurred while processing the HAR file` }],
+    });
+  });
+
+  it('should return error when neither urlPattern nor excludeDomains is provided and validateFilters is true', async () => {
+    const mockArgs = {
+      filePath: '/path/to/example.har',
+      showQueryParams: false,
+      filter: { statusCode: 200 },
+    };
+
+    const result = await handleHarViewer(mockArgs, true);
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: 'Error: Either urlPattern or excludeDomains must be provided to filter the output. Use the domain_list tool first to see available domains.',
+        },
+      ],
+    });
+  });
+
+  it('should skip validation when validateFilters is false', async () => {
+    const mockFormattedHar = '[1] 200 GET https://example.com';
+    const mockArgs = {
+      filePath: '/path/to/example.har',
+      showQueryParams: false,
+      filter: { statusCode: 200 },
+    };
+
+    vi.mocked(harParser.parseAndFormatHar).mockResolvedValue(mockFormattedHar);
+
+    const result = await handleHarViewer(mockArgs, false);
+
+    expect(harParser.parseAndFormatHar).toHaveBeenCalledWith(mockArgs.filePath, {
+      showQueryParams: mockArgs.showQueryParams,
+      filter: mockArgs.filter,
+    });
+
+    expect(result).toEqual({
+      content: [{ type: 'text', text: mockFormattedHar }],
     });
   });
 });

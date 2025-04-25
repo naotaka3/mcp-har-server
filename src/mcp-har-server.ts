@@ -15,7 +15,9 @@ export const createMcpHarServer = async () => {
     'har_viewer',
     'Displays HAR file requests in a simplified format with options to filter by method, status code, or URL pattern and toggle query parameter visibility.',
     harViewerSchema.shape,
-    handleHarViewer
+    (args) => {
+      return handleHarViewer(args, true);
+    }
   );
   // Define the har_detail tool
   mcpServer.tool(

@@ -36,16 +36,20 @@ async function main(): Promise<void> {
       });
     } else {
       // List mode - show list of all entries with filtering
-      result = await handleHarViewer({
-        filePath: options.filePath,
-        showQueryParams: options.showQueryParams,
-        filter: {
-          statusCode: options.statusCode,
-          method: options.method,
-          urlPattern: options.urlPattern,
-          excludeDomains: options.excludeDomains,
+      // Disable filter validation for CLI usage
+      result = await handleHarViewer(
+        {
+          filePath: options.filePath,
+          showQueryParams: options.showQueryParams,
+          filter: {
+            statusCode: options.statusCode,
+            method: options.method,
+            urlPattern: options.urlPattern,
+            excludeDomains: options.excludeDomains,
+          },
         },
-      });
+        false
+      );
     }
 
     // Output the result

@@ -1,5 +1,6 @@
 ## Directory Structure
 
+```tree
 .
 ├── README.md
 ├── eslint.config.js
@@ -37,3 +38,4 @@
 │       └── hash.ts
 ├── tsconfig.json
 └── tsconfig.spec.json
+```

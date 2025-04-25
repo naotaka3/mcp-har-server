@@ -12,8 +12,8 @@ describe('harViewerSchema', () => {
       filePath: '/path/to/file.har',
       showQueryParams: false,
       filter: {
-        urlPattern: 'example.com'
-      }
+        urlPattern: 'example.com',
+      },
     };
     expect(() => harViewerSchema.parse(validInput)).not.toThrow();
   });
@@ -23,8 +23,8 @@ describe('harViewerSchema', () => {
       filePath: '/path/to/file.har',
       showQueryParams: true,
       filter: {
-        excludeDomains: ['google.com']
-      }
+        excludeDomains: ['google.com'],
+      },
     };
     expect(() => harViewerSchema.parse(validInput)).not.toThrow();
   });
@@ -34,8 +34,8 @@ describe('harViewerSchema', () => {
       filePath: '/path/to/file.har',
       showQueryParams: false,
       filter: {
-        statusCode: 200
-      }
+        statusCode: 200,
+      },
     };
     expect(() => harViewerSchema.parse(invalidInput)).toThrow();
   });
@@ -45,8 +45,8 @@ describe('harViewerSchema', () => {
       filePath: '/path/to/file.har',
       showQueryParams: false,
       filter: {
-        excludeDomains: []
-      }
+        excludeDomains: [],
+      },
     };
     expect(() => harViewerSchema.parse(invalidInput)).toThrow();
   });
@@ -62,9 +62,9 @@ describe('handleHarViewer', () => {
     const mockArgs = {
       filePath: '/path/to/example.har',
       showQueryParams: false,
-      filter: { 
+      filter: {
         statusCode: 200,
-        urlPattern: 'example.com'
+        urlPattern: 'example.com',
       },
     };
 
@@ -111,7 +111,7 @@ describe('handleHarViewer', () => {
     const mockArgs = {
       filePath: '/path/to/nonexistent.har',
       showQueryParams: false,
-      filter: { urlPattern: 'example.com' }
+      filter: { urlPattern: 'example.com' },
     };
 
     vi.mocked(harParser.parseAndFormatHar).mockRejectedValue(mockError);
@@ -127,7 +127,7 @@ describe('handleHarViewer', () => {
     const mockArgs = {
       filePath: '/path/to/corrupt.har',
       showQueryParams: false,
-      filter: { urlPattern: 'example.com' }
+      filter: { urlPattern: 'example.com' },
     };
 
     vi.mocked(harParser.parseAndFormatHar).mockRejectedValue('Not an error object');
@@ -149,10 +149,12 @@ describe('handleHarViewer', () => {
     const result = await handleHarViewer(mockArgs);
 
     expect(result).toEqual({
-      content: [{ 
-        type: 'text', 
-        text: 'Error: Either urlPattern or excludeDomains must be provided to filter the output. Use the domain_list tool first to see available domains.'
-      }],
+      content: [
+        {
+          type: 'text',
+          text: 'Error: Either urlPattern or excludeDomains must be provided to filter the output. Use the domain_list tool first to see available domains.',
+        },
+      ],
     });
   });
 });

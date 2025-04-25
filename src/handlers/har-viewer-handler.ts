@@ -25,10 +25,13 @@ export const harViewerSchema = z.object({
         .describe('Domains to exclude from the output (multiple domains can be specified)'),
     })
     .refine(
-      (filter) => filter.urlPattern !== undefined || (filter.excludeDomains !== undefined && filter.excludeDomains.length > 0),
+      (filter) =>
+        filter.urlPattern !== undefined ||
+        (filter.excludeDomains !== undefined && filter.excludeDomains.length > 0),
       {
-        message: 'Either urlPattern or excludeDomains must be provided to filter the output. Use the domain_list tool first to see available domains.',
-        path: ['filter']
+        message:
+          'Either urlPattern or excludeDomains must be provided to filter the output. Use the domain_list tool first to see available domains.',
+        path: ['filter'],
       }
     )
     .describe('Required filters to narrow down the displayed requests'),
@@ -46,14 +49,16 @@ export type HarViewerArgs = z.infer<typeof harViewerSchema>;
  */
 export async function handleHarViewer(args: HarViewerArgs) {
   const { filePath, showQueryParams, filter } = args;
-  
+
   // Validate the filter requirement
   if (!filter.urlPattern && (!filter.excludeDomains || filter.excludeDomains.length === 0)) {
     return {
-      content: [{ 
-        type: 'text' as const, 
-        text: 'Error: Either urlPattern or excludeDomains must be provided to filter the output. Use the domain_list tool first to see available domains.'
-      }],
+      content: [
+        {
+          type: 'text' as const,
+          text: 'Error: Either urlPattern or excludeDomains must be provided to filter the output. Use the domain_list tool first to see available domains.',
+        },
+      ],
     };
   }
 

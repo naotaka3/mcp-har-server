@@ -9,12 +9,15 @@ async function main() {
 
   await server.connect(transport);
 
-  // Cleanup on exit
-  process.on('SIGINT', async () => {
+  async function exit() {
+    setTimeout(() => process.exit(0), 15000);
     await cleanup();
-    await server.close();
     process.exit(0);
-  });
+  }
+
+  process.stdin.on('close', exit);
+  process.on('SIGINT', exit);
+  process.on('SIGTERM', exit);
 }
 
 main().catch((error) => {

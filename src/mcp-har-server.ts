@@ -7,7 +7,7 @@ export const createMcpHarServer = async () => {
   // Create an MCP server
   const mcpServer = new McpServer({
     name: 'mcp-har-server',
-    version: '1.0.0',
+    version: '0.0.0',
   });
 
   // Define the har_viewer tool

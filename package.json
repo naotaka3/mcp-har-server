@@ -1,10 +1,9 @@
 {
   "name": "mcp-har-server",
   "version": "0.1.0",
-  "author": "Adam Wattis",
+  "author": "Naotaka Mizuki",
   "license": "MIT",
   "description": "An MCP server that parses HAR files and returns requests in a simplified format",
-  "private": true,
   "type": "module",
   "bin": {
     "mcp-har-server": "./build/index.js",

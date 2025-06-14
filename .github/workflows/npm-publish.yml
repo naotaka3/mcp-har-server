@@ -4,17 +4,24 @@ on:
   release:
     types: [created]
 
+env:
+  NODE_VERSION: '22.x'
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
 
       - name: Extract version from GitHub release tag
@@ -39,6 +46,11 @@ jobs:
         run: npm version $VERSION --no-git-tag-version
         env:
           VERSION: ${{ env.VERSION }}
+
+      - name: Update MCP server version in source code
+        run: |
+          # Replace the hardcoded version with the release version
+          sed -i "s/version: '0\.0\.0'/version: '${{ env.VERSION }}'/g" src/mcp-server.ts
 
       - name: Check package.json
         run: cat package.json

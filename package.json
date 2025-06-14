@@ -1,6 +1,6 @@
 {
   "name": "mcp-har-server",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "author": "Naotaka Mizuki",
   "license": "MIT",
   "description": "An MCP server that parses HAR files and returns requests in a simplified format",

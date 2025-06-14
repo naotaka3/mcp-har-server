@@ -5,32 +5,68 @@ A Model Context Protocol (MCP) server that parses HAR (HTTP Archive) files and d
 ## Features
 
 - Parse HAR files and extract request/response information
-- Display requests in a numbered list format with status codes and methods
+- Display requests with hash identifiers for easy reference
 - Toggle query parameter visibility
-- Filter requests by status code, method, or URL pattern
+- Filter requests by status code, method, URL pattern, or exclude specific domains
 - View detailed headers and body information for specific requests
+- List unique domains from HAR files to help with filtering
 
-## Installation
+## Available Tools
 
-```bash
-# Clone the repository
-git clone https://github.com/shimizu1995/mcp-har-server.git
-cd mcp-har-server
+### har_viewer
 
-# Install dependencies
-npm install
+Displays HAR file requests in a simplified format with hash identifiers. Includes filtering options to narrow down results.
 
-# Build the project
-npm run build
+### har_detail
+
+Provides detailed information about specific HAR file entries including headers and request/response bodies. Uses hash identifiers to reference specific requests.
+
+### domain_list
+
+Lists all unique domains found in a HAR file to help reduce output volume and provide filtering options.
+
+## Usage with Claude Desktop
+
+To use this server with Claude Desktop, add the following configuration to your `claude_desktop_config.json`:
+
+The configuration file `claude_desktop_config.json` is located at:
+After changing the configuration, please restart Claude Desktop.
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+### Using npx
+
+```json
+{
+  "mcpServers": {
+    "mcp-har-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@naotaka/mcp-har-server@latest"
+      ]
+    }
+  }
+}
+```
+
+### Using build
+
+```json
+{
+  "mcpServers": {
+    "mcp-har-server": {
+      "command": "node",
+      "args": [
+        "/path/to/mcp-har-server/build/index.js"
+      ]
+    }
+  }
+}
 ```
 
 ## Usage
-
-### Running the server
-
-```bash
-npm run dev
-```
 
 ### Using the HAR viewer tool
 
@@ -45,8 +81,27 @@ const result = await mcpClient.callTool('har_viewer', {
     statusCode: 200, // Optional: Filter by status code
     method: 'GET', // Optional: Filter by HTTP method
     urlPattern: 'api', // Optional: Filter by URL pattern
+    excludeDomains: ['cdn.example.com', 'analytics.example.com'], // Optional: Exclude specific domains
   },
 });
+```
+
+HAR Viewer Output Example
+
+With `showQueryParams: true`:
+
+```text
+[abc123] 200 GET https://example.com/api/users?page=1&limit=10
+[def456] 404 POST https://api.example.org/data/process?format=json&version=2.1
+[ghi789] 500 PUT https://service.example.net/update?id=12345&token=abc123
+```
+
+With `showQueryParams: false`:
+
+```text
+[abc123] 200 GET https://example.com/api/users
+[def456] 404 POST https://api.example.org/data/process
+[ghi789] 500 PUT https://service.example.net/update
 ```
 
 ### Using the HAR Detail tool
@@ -57,33 +112,15 @@ The HAR Detail tool allows you to view detailed information about specific reque
 // Example usage through MCP protocol
 const result = await mcpClient.callTool('har_detail', {
   filePath: '/path/to/your/file.har',
-  indices: 1, // Single index or comma-separated list like '1,3,5'
+  hashes: 'abc123', // Single hash or comma-separated list like 'abc123,def456,ghi789'
   showBody: true, // Set to false to hide request/response bodies
 });
 ```
 
-### Example HAR Viewer Output
+HAR Detail Output Example
 
-With `showQueryParams: true`:
-
-```
-[1] 200 GET https://example.com/api/users?page=1&limit=10
-[2] 404 POST https://api.example.org/data/process?format=json&version=2.1
-[3] 500 PUT https://service.example.net/update?id=12345&token=abc123
-```
-
-With `showQueryParams: false`:
-
-```
-[1] 200 GET https://example.com/api/users
-[2] 404 POST https://api.example.org/data/process
-[3] 500 PUT https://service.example.net/update
-```
-
-### Example HAR Detail Output
-
-```
-ENTRY [1]
+```text
+ENTRY [abc123]
 === REQUEST ===
 GET https://example.com/api/users?page=1&limit=10
 
@@ -115,17 +152,44 @@ Cache-Control: no-cache
 }
 ```
 
+### Using the Domain List tool
+
+The Domain List tool helps you see all unique domains in a HAR file, which is useful for filtering:
+
+```javascript
+// Example usage through MCP protocol
+const result = await mcpClient.callTool('domain_list', {
+  filePath: '/path/to/your/file.har',
+});
+```
+
+Domain List Output Example
+
+```text
+example.com
+api.example.org
+service.example.net
+cdn.example.com
+analytics.example.com
+```
+
 ## Development
 
+### Installation
+
 ```bash
-# Run the development server with hot reload
-npm run dev
+# Install dependencies
+npm ci
+```
+
+### Build and Test
+
+```bash
+# Build the project
+npm run build
 
 # Run tests
 npm test
-
-# Lint code
-npm run lint
 ```
 
 ## About MCP

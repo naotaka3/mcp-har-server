@@ -50,7 +50,7 @@ jobs:
       - name: Update MCP server version in source code
         run: |
           # Replace the hardcoded version with the release version
-          sed -i "s/version: '0\.0\.0'/version: '${{ env.VERSION }}'/g" src/mcp-server.ts
+          sed -i "s/version: '0\.0\.0'/version: '${{ env.VERSION }}'/g" src/mcp-har-server.ts
 
       - name: Check package.json
         run: cat package.json

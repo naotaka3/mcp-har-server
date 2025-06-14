@@ -1,5 +1,5 @@
 {
-  "name": "mcp-har-server",
+  "name": "@naotaka/mcp-har-server",
   "version": "0.0.0",
   "author": "Naotaka Mizuki",
   "license": "MIT",

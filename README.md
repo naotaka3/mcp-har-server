@@ -42,10 +42,7 @@ After changing the configuration, please restart Claude Desktop.
   "mcpServers": {
     "mcp-har-server": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@naotaka/mcp-har-server@latest"
-      ]
+      "args": ["-y", "@naotaka/mcp-har-server@latest"]
     }
   }
 }
@@ -58,9 +55,7 @@ After changing the configuration, please restart Claude Desktop.
   "mcpServers": {
     "mcp-har-server": {
       "command": "node",
-      "args": [
-        "/path/to/mcp-har-server/build/index.js"
-      ]
+      "args": ["/path/to/mcp-har-server/build/index.js"]
     }
   }
 }

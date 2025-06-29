@@ -4,6 +4,33 @@
   "author": "Naotaka Mizuki",
   "license": "MIT",
   "description": "An MCP server that parses HAR files and returns requests in a simplified format",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "har",
+    "http-archive",
+    "http",
+    "request",
+    "response",
+    "parser",
+    "analyzer",
+    "ai",
+    "claude",
+    "assistant",
+    "network",
+    "debugging",
+    "web",
+    "api",
+    "server"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/naotaka3/mcp-har-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/naotaka3/mcp-har-server/issues"
+  },
+  "homepage": "https://github.com/naotaka3/mcp-har-server#readme",
   "type": "module",
   "bin": {
     "mcp-har-server": "./build/index.js",
